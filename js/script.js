@@ -2,6 +2,9 @@
 var rootURL = "https://api.themoviedb.org/3";
 var apiKey = "29b4f290e3fdf9c7612586ac8b9fe9ff";
 
+// Par défaut on a 20 films affichés donc la width est de 5%
+var movieWidth = 5;
+
 // Appel à l'API en ajax
 function getUpcoming(){
   var url = rootURL+"/movie/upcoming?api_key="+apiKey;
@@ -30,7 +33,7 @@ function hideLoader(){
 };
 // Décalage du slider d'un cran vers la gauche et on replace l'élément le plus à gauche en fin de liste pour pouvoir cycler 
 function nextMovie(){
-  $("#MoviesList .movie:first-child").animate({"margin-left": "-5%"}, 800, function(){  
+  $("#MoviesList .movie:first-child").animate({"margin-left": "-"+movieWidth+"%"}, 800, function(){  
       $(this).css("margin-left","").appendTo("#MoviesList");  
       var position = $("#MoviesList .movie:first-child").data( "position" );
       $('#tabs li').removeClass('current');
@@ -41,7 +44,7 @@ function nextMovie(){
 }
 // On place l'élément précédent à gauche de l'élément actuel et on décale le slider d'un cran vers la droite 
 function prevMovie(){
-  $("#MoviesList .movie:last-child").css("margin-left","-5%").prependTo("#MoviesList"); 
+  $("#MoviesList .movie:last-child").css("margin-left","-"+movieWidth+"%").prependTo("#MoviesList"); 
   var position = $("#MoviesList .movie:first-child").data( "position" );
   $("#MoviesList .movie:first-child").animate({"margin-left": "0"}, 800);
   $('#tabs li').removeClass('current');
@@ -57,7 +60,7 @@ function goToMovie(position){
   // Mouvement vers la droite pour un élément précédent 
   if (delta<0) {
     // On place l'élément souhaité avant l'élément actuel
-    $("#MoviesList .movie[data-position='"+position+"']").css("margin-left","-5%").insertBefore($("#MoviesList .movie:first-child"));
+    $("#MoviesList .movie[data-position='"+position+"']").css("margin-left","-"+movieWidth+"%").insertBefore($("#MoviesList .movie:first-child"));
     $("#MoviesList .movie:first-child").animate({"margin-left": "0%"}, 800, function(){ 
       // On repositionne les elements dans le bon ordre à la suite de l'élément pour continuer à cycler le slider
       for (var h = 0; h < -delta; h++) {
@@ -73,7 +76,7 @@ function goToMovie(position){
   }else if(delta>0){
     // On place l'élément souhaité avant l'élément actuel
     $("#MoviesList .movie[data-position='"+position+"']").insertAfter($("#MoviesList .movie:first-child"));
-    $("#MoviesList .movie:first-child").animate({"margin-left": "-5%"}, 800, function(){ 
+    $("#MoviesList .movie:first-child").animate({"margin-left": "-"+movieWidth+"%"}, 800, function(){ 
       // On repositionne les elements dans le bon ordre à la suite de la liste pour continuer à cycler le slider
       for (var h = 0; h < delta; h++) {
         $("#MoviesList .movie[data-position='"+(current+h)+"']").css("margin-left","").appendTo("#MoviesList");
@@ -103,7 +106,13 @@ $(document).ready(function() {
   
   // Réponse de l'API
   $(document).on('upcomingSuccess', function(event, response){
-    for(var i= 0; i < response.results.length; i++)
+    var nbMovies = response.results.length;
+    movieWidth = 100.0/nbMovies;
+    console.log(nbMovies);
+    console.log(movieWidth);
+
+
+    for(var i= 0; i < nbMovies; i++)
     {
 
       var htmlMovie = "<li class='movie' data-position='"+i+"'>";
@@ -153,6 +162,11 @@ $(document).ready(function() {
       }else{
         $('#tabs ul').append('<li data-position="'+i+'"></li>');
       }
+    }
+    // Si on a plus ou moins de 20 films on change les valeurs par défaut
+    if(nbMovies != 20){
+      $("#MoviesList").css("width",nbMovies*100+"%");
+      $("#MoviesList .movie").css("width",movieWidth+"%");
     }
     // Action des bullet points
     $('#tabs li').on('click',function(){

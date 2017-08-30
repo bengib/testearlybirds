@@ -267,6 +267,8 @@ ul {
 #slideshowMovies #MoviesList .movie .overview {
   margin-bottom: 20px;
   color: white;
+  max-height: 200px;
+  overflow-y: scroll;
 }
 #slideshowMovies #MoviesList .movie .score {
   list-style-type: none;
