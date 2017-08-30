@@ -108,8 +108,6 @@ $(document).ready(function() {
   $(document).on('upcomingSuccess', function(event, response){
     var nbMovies = response.results.length;
     movieWidth = 100.0/nbMovies;
-    console.log(nbMovies);
-    console.log(movieWidth);
 
 
     for(var i= 0; i < nbMovies; i++)
